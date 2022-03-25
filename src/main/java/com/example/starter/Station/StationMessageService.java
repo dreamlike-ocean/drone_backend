@@ -39,6 +39,8 @@ public class StationMessageService {
         serverWebSocket.writeTextMessage(new StationMsg.ErrorMsg("格式有误",sequence).transToJson());
         return;
       }
+      // station R_A R_B
+      // R_A R_B
       Future<?> res;
       switch (msgType){
         case StationMsg.ACCEPT:{

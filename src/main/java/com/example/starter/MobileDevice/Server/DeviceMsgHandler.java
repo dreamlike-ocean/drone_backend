@@ -45,11 +45,11 @@ public class DeviceMsgHandler extends SimpleChannelInboundHandler<DeviceMsg> {
           DeviceMsg openMsg = DeviceMsg.createOutMsg();
           DeviceCmd.DownCMD.open(openMsg,posInDevice);
           ctx.channel().writeAndFlush(openMsg);
-
         }
         DeviceMsg validResMsg = DeviceMsg.createOutMsg();
         DeviceCmd.DownCMD.validResult(validResMsg, orderPO != null);
         ctx.channel().writeAndFlush(validResMsg);
+        return;
       }
 
       Pair<CoordinatePoint.Longitude, CoordinatePoint.Latitude> coordinate = DeviceCmd.UpwardCMD.getCoordinate(msg);

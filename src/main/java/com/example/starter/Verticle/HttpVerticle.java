@@ -13,6 +13,8 @@ import com.example.starter.Util.OperatorUtil;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.SessionHandler;
+import io.vertx.ext.web.sstore.SessionStore;
 import io.vertx.mysqlclient.MySQLPool;
 import lombok.extern.java.Log;
 
@@ -24,19 +26,25 @@ import java.lang.reflect.Parameter;
 public class HttpVerticle extends AbstractVerticle {
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
+    //可以跨线程共享
     MySQLPool mysqlPool = OperatorUtil.createMysqlPool();
+
     final OrderService orderService = new OrderService(new OrderMapper(mysqlPool));
     OrderController controller = new OrderController(orderService);
     StationMapper stationMapper = new StationMapper(mysqlPool);
     StationController stationController = new StationController(stationMapper, new StationMessageService(orderService), mysqlPool);
     UserController userController = new UserController(new LoginUserService(mysqlPool, stationMapper));
+
     Router router = Router.router(vertx);
     invokeAllRouterMethod(controller, router);
     invokeAllRouterMethod(stationController, router);
     invokeAllRouterMethod(userController, router);
+
+    router.route()
+        .handler(SessionHandler.create(SessionStore.create(vertx)));
     router.errorHandler(500, rc -> rc.json(ResponseEntity.failure(rc.failure().getMessage())));
-    router.get("/test")
-      .handler(rc -> rc.end("hello"));
+
+
     vertx.createHttpServer()
       .requestHandler(router)
       .listen(80)

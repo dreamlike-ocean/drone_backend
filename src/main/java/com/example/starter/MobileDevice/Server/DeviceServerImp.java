@@ -9,6 +9,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.impl.NetSocketInternal;
+import io.vertx.core.net.impl.VertxHandler;
 import io.vertx.mysqlclient.MySQLPool;
 
 
@@ -38,11 +39,13 @@ public class DeviceServerImp implements DeviceServer{
       return vertx.createNetServer(netServerOptions)
                 .connectHandler(socket -> {
                     ChannelPipeline pipeline = ((NetSocketInternal) socket).channelHandlerContext().pipeline();
+                    pipeline.remove(VertxHandler.class);
                     pipeline
                       .addLast(new LengthFieldBasedFrameDecoder(5*1024,0,4,0,4))
-                      .addLast(new DeviceInitHandler())
                       .addLast(new DeviceInfoCodec())
+                      .addLast(new DeviceInitHandler())
                       .addLast(new DeviceMsgHandler(mysqlPool));
+
                 })
                 .listen(port)
                 .map(netServer -> {
@@ -55,4 +58,6 @@ public class DeviceServerImp implements DeviceServer{
         this.netServer = netServer;
         return this;
     }
+
+
 }

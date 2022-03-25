@@ -38,6 +38,7 @@ public class DeviceInfoCodec extends ByteToMessageCodec<DeviceMsg> {
         list.add(new DeviceMsg(deviceId, params));
     }
 
+
     private List<String> merge(List<String> l1,List<String> l2){
         ArrayList<String> list = new ArrayList<>(l1);
         list.addAll(l2);

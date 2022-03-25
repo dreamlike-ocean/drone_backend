@@ -41,7 +41,7 @@ public class UserController{
                             .onSuccess(user -> {
                                 Session session = rc.session();
                                 session.put(userKeyInSession,user);
-                                if (Roles.ADMIN.role.equals(user.getRole())){
+                                if (Roles.STATION.role.equals(user.getRole())){
                                   loginUserService.getStationInfo(user.getUserId())
                                     .onSuccess(p -> {
                                       session.put(stationPairKeyInSession,p);
