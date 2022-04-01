@@ -24,7 +24,7 @@ public class AccessBaseSessionHandler {
      */
     public static Handler<RoutingContext> createLeastMode(final Roles role) {
         return rc -> {
-            if (getNowRole(rc).power >= role.power){
+            if (getNowRole(rc).power < role.power){
                 rc.fail(new NoStackTraceThrowable("权限不足"));
                 return;
             }

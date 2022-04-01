@@ -36,12 +36,14 @@ public class HttpVerticle extends AbstractVerticle {
     UserController userController = new UserController(new LoginUserService(mysqlPool, stationMapper));
 
     Router router = Router.router(vertx);
+    router.route()
+      .handler(SessionHandler.create(SessionStore.create(vertx)));
     invokeAllRouterMethod(controller, router);
     invokeAllRouterMethod(stationController, router);
     invokeAllRouterMethod(userController, router);
 
-    router.route()
-        .handler(SessionHandler.create(SessionStore.create(vertx)));
+
+
     router.errorHandler(500, rc -> rc.json(ResponseEntity.failure(rc.failure().getMessage())));
 
 
