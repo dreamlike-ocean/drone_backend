@@ -121,13 +121,16 @@ public class OperatorUtil {
 
     //转换future类型
     public static Future<Void> writeAndFlushDeviceMsg(DeviceMsg deviceMsg, Channel channel){
+      Context context = Vertx.currentContext();
       Promise<Void> promise = Promise.promise();
       channel.writeAndFlush(deviceMsg)
         .addListener(future -> {
           if (future.isSuccess()) {
-            promise.complete();
+            context.runOnContext(v->{
+              promise.complete();
+            });
           }else {
-            promise.fail(future.cause());
+            context.runOnContext((v) -> promise.fail(future.cause()));
           }
         });
       return promise.future();
